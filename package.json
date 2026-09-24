@@ -1,0 +1,14 @@
+{
+  "name": "dronee",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Browser-based F450 quadcopter simulator with Pixhawk hardware-in-the-loop and a QGroundControl-style ground station",
+  "type": "module",
+  "scripts": {
+    "start": "npx --yes http-server -p 8080 -c-1 .",
+    "test": "node tests/mavlink.test.mjs && node tests/flight.test.mjs",
+    "bridge": "cd bridge && npm install && node server.js",
+    "mock": "node tools/mock-pixhawk.mjs"
+  },
+  "license": "MIT"
+}

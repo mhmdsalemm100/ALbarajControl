@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Dronee F450 Simulator</title>
+  <meta name="description" content="Browser-based F450 quadcopter simulator with Pixhawk hardware-in-the-loop, RC transmitter support and a QGroundControl-style ground station." />
+  <meta name="theme-color" content="#15191e" />
+  <link rel="icon" href="assets/icon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="vendor/leaflet/leaflet.css" />
+  <link rel="stylesheet" href="css/app.css" />
+  <script type="importmap">
+    { "imports": { "three": "./vendor/three/three.module.js", "three/addons/": "./vendor/three/addons/" } }
+  </script>
+</head>
+<body>
+  <!-- SVG icon sprite -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-gcs" viewBox="0 0 48 48"><rect x="2" y="2" width="44" height="44" rx="11" fill="#6c3fd1"/><circle cx="23" cy="22" r="11.5" fill="none" stroke="#fff" stroke-width="4.5"/><path d="M28 28l9 9" stroke="#fff" stroke-width="5" stroke-linecap="round"/><path d="M17.5 22h11M23 16.5v11" stroke="#ffb74d" stroke-width="2.4" stroke-linecap="round"/><circle cx="17.5" cy="22" r="2.2" fill="#ffb74d"/><circle cx="28.5" cy="22" r="2.2" fill="#ffb74d"/><circle cx="23" cy="16.5" r="2.2" fill="#ffb74d"/><circle cx="23" cy="27.5" r="2.2" fill="#ffb74d"/></symbol>
+    <symbol id="i-cube" viewBox="0 0 24 24"><path d="M12 2l9 5v10l-9 5-9-5V7z M12 12l9-5 M12 12v10 M12 12L3 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+    <symbol id="i-fly" viewBox="0 0 24 24"><path d="M2 12l20-9-6 19-4-8z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+    <symbol id="i-plan" viewBox="0 0 24 24"><path d="M4 20l5-6 5 3 6-11" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="4" cy="20" r="2" fill="currentColor"/><circle cx="9" cy="14" r="2" fill="currentColor"/><circle cx="14" cy="17" r="2" fill="currentColor"/><circle cx="20" cy="6" r="2" fill="currentColor"/></symbol>
+    <symbol id="i-analyze" viewBox="0 0 24 24"><path d="M3 20h18M5 16l4-6 4 3 6-8" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+    <symbol id="i-setup" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="i-usb" viewBox="0 0 24 24"><path d="M12 2v16M12 18a2 2 0 1 0 .01 0M8 6l4-4 4 4M6 10v3l6 3M18 8v4l-6 3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="i-cam" viewBox="0 0 24 24"><path d="M3 7h4l2-3h6l2 3h4v13H3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="13" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+    <symbol id="i-video" viewBox="0 0 24 24"><rect x="2" y="6" width="14" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M16 10l6-3v10l-6-3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+    <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M9.2 9.3a3 3 0 1 1 4 2.8c-.8.4-1.2 1-1.2 1.9v.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="17.6" r="1.2" fill="currentColor"/></symbol>
+    <symbol id="i-gps" viewBox="0 0 24 24"><path d="M5 12l7-7 3 3-7 7zM13 13l3 3M10 16a4 4 0 0 1-4-4M10 20a8 8 0 0 1-8-8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="i-bat" viewBox="0 0 24 24"><rect x="2" y="7" width="18" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><rect x="20" y="10" width="2.4" height="4" fill="currentColor"/></symbol>
+    <symbol id="i-rc" viewBox="0 0 24 24"><rect x="3" y="9" width="18" height="12" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 9V3" stroke="currentColor" stroke-width="1.8"/><circle cx="8" cy="15" r="2" fill="currentColor"/><circle cx="16" cy="15" r="2" fill="currentColor"/></symbol>
+    <symbol id="i-arm" viewBox="0 0 24 24"><path d="M12 3v9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M6.3 7.2a8 8 0 1 0 11.4 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-takeoff" viewBox="0 0 24 24"><path d="M12 20V6M6 11l6-6 6 6M4 21h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-land" viewBox="0 0 24 24"><path d="M12 3v14M6 12l6 6 6-6M4 21h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-rtl" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9h-6v-6H9v6H3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14" rx="1" fill="currentColor"/><rect x="14" y="5" width="4" height="14" rx="1" fill="currentColor"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4l13 8-13 8z" fill="currentColor"/></symbol>
+    <symbol id="i-reset" viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v5h5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  </svg>
+
+  <div id="app" class="view-sim">
+    <!-- ================================================================ toolbar -->
+    <header id="toolbar">
+      <button id="gcsToggle" class="brand" title="Ground Control (Q)"><svg><use href="#i-gcs"/></svg></button>
+      <nav id="viewTabs" aria-label="Views">
+        <button data-view="sim" class="active" title="3D simulator view"><svg><use href="#i-cube"/></svg><span>3D Sim</span></button>
+        <button data-view="fly" title="Fly view (map)"><svg><use href="#i-fly"/></svg><span>Fly</span></button>
+        <button data-view="plan" title="Plan a mission"><svg><use href="#i-plan"/></svg><span>Plan</span></button>
+        <button data-view="analyze" title="MAVLink inspector, charts, logs"><svg><use href="#i-analyze"/></svg><span>Analyze</span></button>
+        <button data-view="setup" title="Vehicle & simulator setup"><svg><use href="#i-setup"/></svg><span>Setup</span></button>
+      </nav>
+      <div id="readyPill" class="pill">Ready To Fly</div>
+      <select id="modeSelect" title="Flight mode"></select>
+      <div class="indicators">
+        <span id="indGps" title="GPS"><svg><use href="#i-gps"/></svg><b>—</b></span>
+        <span id="indBat" title="Battery"><svg><use href="#i-bat"/></svg><b>—</b></span>
+        <span id="indInput" title="Pilot input source"><svg><use href="#i-rc"/></svg><b>KB</b></span>
+        <span id="indLink" title="Link"><svg><use href="#i-usb"/></svg><b>SIM</b></span>
+      </div>
+      <div class="spacer"></div>
+      <button id="btnConnect" class="primary" title="Connect a Pixhawk"><svg><use href="#i-usb"/></svg><span>Connect Pixhawk</span></button>
+      <button id="btnCamera" title="Camera view (C)"><svg><use href="#i-video"/></svg><span id="camLabel">Chase</span></button>
+      <button id="btnShot" title="Save a high-resolution screenshot (P)"><svg><use href="#i-cam"/></svg></button>
+      <button id="btnHelp" title="Help & controls (F1)"><svg><use href="#i-help"/></svg></button>
+    </header>
+
+    <!-- ================================================================ stage: 3D + map -->
+    <main id="stage">
+      <div id="view3d" class="surface"></div>
+      <div id="mapWrap" class="surface"><div id="map"></div></div>
+      <button id="swapBtn" title="Swap map / 3D">⇄</button>
+
+      <!-- fly tools (left strip, like QGroundControl) -->
+      <div id="flyTools">
+        <button id="toolArm"><svg><use href="#i-arm"/></svg><span>Arm</span></button>
+        <button id="toolTakeoff"><svg><use href="#i-takeoff"/></svg><span>Takeoff</span></button>
+        <button id="toolLand"><svg><use href="#i-land"/></svg><span>Land</span></button>
+        <button id="toolRtl"><svg><use href="#i-rtl"/></svg><span>Return</span></button>
+        <button id="toolHold"><svg><use href="#i-pause"/></svg><span>Hold</span></button>
+        <button id="toolMission"><svg><use href="#i-play"/></svg><span>Mission</span></button>
+        <button id="toolReset"><svg><use href="#i-reset"/></svg><span>Reset</span></button>
+      </div>
+
+      <!-- instrument panel -->
+      <div id="instruments">
+        <div class="dials">
+          <canvas id="attCanvas"></canvas>
+          <canvas id="compassCanvas"></canvas>
+        </div>
+        <div class="values">
+          <div><label>Alt (rel)</label><b id="vAlt">0.0</b><i>m</i></div>
+          <div><label>Climb</label><b id="vClimb">0.0</b><i>m/s</i></div>
+          <div><label>Ground spd</label><b id="vSpd">0.0</b><i>m/s</i></div>
+          <div><label>Dist home</label><b id="vHome">0</b><i>m</i></div>
+          <div><label>Flight time</label><b id="vTime">00:00</b></div>
+          <div><label>Battery</label><b id="vBat">12.6</b><i>V</i></div>
+          <div><label>Heading</label><b id="vHdg">0</b><i>°</i></div>
+          <div><label>Throttle</label><b id="vThr">0</b><i>%</i></div>
+        </div>
+      </div>
+
+      <!-- stick monitor -->
+      <div id="stickMon" title="Pilot sticks">
+        <div class="gimbal"><div class="dot" id="stickL"></div></div>
+        <div class="gimbal"><div class="dot" id="stickR"></div></div>
+        <div class="src" id="stickSrc">Keyboard</div>
+      </div>
+
+      <!-- touch sticks (phones / tablets) -->
+      <div id="touchSticks">
+        <div class="tstick" id="touchL"><div class="knob"></div></div>
+        <div class="tstick" id="touchR"><div class="knob"></div></div>
+      </div>
+
+      <div id="messages" aria-live="polite"></div>
+      <div id="bigStatus"></div>
+    </main>
+
+    <!-- ================================================================ plan panel -->
+    <aside id="planPanel" class="panel">
+      <h2>Mission plan</h2>
+      <p class="hint">Click on the map to add waypoints. Drag markers to move them.</p>
+      <div class="row wrap">
+        <button id="planTakeoff">+ Takeoff</button>
+        <button id="planRtl">+ Return</button>
+        <button id="planLand">+ Land</button>
+        <button id="planOrbit" title="Generate an orbit around the map centre">Orbit</button>
+        <button id="planGrid" title="Generate a survey grid in view">Survey</button>
+      </div>
+      <div class="row">
+        <label>Default alt <input id="planAlt" type="number" value="20" min="2" max="500" step="1" /> m</label>
+        <label>Speed <input id="planSpeed" type="number" value="5" min="1" max="15" step="0.5" /> m/s</label>
+      </div>
+      <ol id="planList"></ol>
+      <div id="planStats" class="hint"></div>
+      <div class="row wrap">
+        <button id="planUpload" class="primary">Upload</button>
+        <button id="planStart" class="go">Start mission</button>
+        <button id="planDownload">Download</button>
+        <button id="planClear" class="danger">Clear</button>
+      </div>
+      <div class="row wrap">
+        <button id="planSave">Save .plan</button>
+        <label class="filebtn">Open .plan<input id="planOpen" type="file" accept=".plan,.json" /></label>
+      </div>
+      <div class="progress"><div id="planProgress"></div></div>
+    </aside>
+
+    <!-- ================================================================ analyze panel -->
+    <section id="analyzePanel" class="panel full">
+      <div class="grid2">
+        <div class="card">
+          <h3>Live charts</h3>
+          <canvas id="chartAtt" class="chart"></canvas>
+          <canvas id="chartAlt" class="chart"></canvas>
+          <canvas id="chartMot" class="chart"></canvas>
+        </div>
+        <div class="card">
+          <h3>MAVLink inspector <small id="inspSrc"></small></h3>
+          <div class="insp">
+            <ul id="inspList"></ul>
+            <pre id="inspDetail">Connect a Pixhawk to inspect live MAVLink traffic.
+In simulation-only mode the internal vehicle state is shown.</pre>
+          </div>
+        </div>
+        <div class="card span2">
+          <h3>Messages</h3>
+          <div id="consoleLog"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================ setup panel -->
+    <section id="setupPanel" class="panel full">
+      <div class="grid2">
+        <div class="card">
+          <h3>Pilot input</h3>
+          <label>Input source
+            <select id="inSource">
+              <option value="auto">Automatic (RC via Pixhawk › gamepad › keyboard)</option>
+              <option value="keyboard">Keyboard</option>
+              <option value="gamepad">Gamepad / USB RC transmitter</option>
+              <option value="rc">RC receiver via Pixhawk</option>
+              <option value="touch">Touch sticks</option>
+            </select>
+          </label>
+          <div id="rcBars" class="bars"></div>
+          <h4>RC channel mapping (receiver → Pixhawk)</h4>
+          <div id="rcMap" class="mapgrid"></div>
+          <div class="row"><button id="rcCal">Calibrate min/max (move all sticks)</button><button id="rcCalDone">Done</button></div>
+          <h4>Gamepad / USB transmitter axes</h4>
+          <div id="padMap" class="mapgrid"></div>
+          <div id="padBars" class="bars"></div>
+        </div>
+        <div class="card">
+          <h3>Simulation</h3>
+          <label>Graphics quality
+            <select id="setQuality"><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option><option value="ultra">Ultra (high-quality pictures)</option></select>
+          </label>
+          <label>Time of day <input id="setTime" type="range" min="5.5" max="19" step="0.1" value="10.5" /> <span id="setTimeVal">10:30</span></label>
+          <label>Wind speed <input id="setWind" type="range" min="0" max="12" step="0.5" value="0" /> <span id="setWindVal">0 m/s</span></label>
+          <label>Wind from <input id="setWindDir" type="range" min="0" max="359" step="1" value="45" /> <span id="setWindDirVal">45°</span></label>
+          <label>Gusts <input id="setGust" type="range" min="0" max="3" step="0.1" value="0" /> <span id="setGustVal">0</span></label>
+          <label>Sensor noise <input id="setNoise" type="range" min="0" max="3" step="0.1" value="1" /> <span id="setNoiseVal">1.0×</span></label>
+          <label><input id="setTrail" type="checkbox" checked /> Show flight trail</label>
+          <label><input id="setSticks" type="checkbox" checked /> Show stick monitor</label>
+          <h4>Home location</h4>
+          <div class="row">
+            <label>Lat <input id="homeLat" type="number" step="0.000001" /></label>
+            <label>Lon <input id="homeLon" type="number" step="0.000001" /></label>
+            <label>Alt AMSL <input id="homeAlt" type="number" step="1" /></label>
+          </div>
+          <div class="row"><button id="homeApply">Apply & reset</button><button id="homeKfupm">KFUPM, Dhahran</button></div>
+          <h4>Autopilot (simulation mode)</h4>
+          <div class="row wrap">
+            <label>Takeoff alt <input id="apTakeoff" type="number" value="10" min="2" max="100" /> m</label>
+            <label>RTL alt <input id="apRtl" type="number" value="30" min="5" max="120" /> m</label>
+            <label>Max speed <input id="apSpeed" type="number" value="10" min="2" max="20" /> m/s</label>
+            <label>Max tilt <input id="apTilt" type="number" value="35" min="10" max="60" /> °</label>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================ dialogs -->
+    <dialog id="connectDlg">
+      <form method="dialog">
+        <h2>Connect your Pixhawk</h2>
+        <p>Plug the Pixhawk into this computer with USB (the RC receiver stays connected to the Pixhawk's RC IN port). Close QGroundControl / Mission Planner first so the port is free.</p>
+        <div class="choice">
+          <label><input type="radio" name="cmode" value="rc" checked />
+            <b>RC controller mode</b> — your remote controller (via the receiver on the Pixhawk) flies the simulated F450. Works with any PX4 or ArduPilot firmware, no extra setup.</label>
+          <label><input type="radio" name="cmode" value="hitl" />
+            <b>Hardware-in-the-loop (HITL, PX4)</b> — the Pixhawk runs the real flight controller; this page simulates the physics and sensors. Requires HITL enabled on the Pixhawk (see guide).</label>
+          <label><input type="radio" name="cmode" value="monitor" />
+            <b>Telemetry only</b> — show the real Pixhawk's attitude & data in the ground station (bench testing).</label>
+        </div>
+        <div class="row">
+          <label>Transport
+            <select id="cTransport">
+              <option value="serial">USB / serial (Web Serial)</option>
+              <option value="ws">WebSocket bridge (bridge/server.js)</option>
+            </select>
+          </label>
+          <label>Baud <select id="cBaud"><option>115200</option><option>57600</option><option>921600</option><option>230400</option></select></label>
+          <label id="cWsWrap">URL <input id="cWs" value="ws://localhost:14560" /></label>
+        </div>
+        <p id="cErr" class="err"></p>
+        <p class="hint" id="cSupport"></p>
+        <div class="row end">
+          <a href="https://github.com/mhmdsalemm100/Dronee/blob/HEAD/docs/HITL_SETUP.md" target="_blank" rel="noopener">Setup guide</a>
+          <button value="cancel">Cancel</button>
+          <button id="cGo" class="primary" value="default">Connect</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="helpDlg">
+      <form method="dialog">
+        <h2>Dronee F450 simulator</h2>
+        <p>You can fly right away in <b>simulation mode</b> — no controller needed. Connect a Pixhawk (with its RC receiver) to fly with your real remote controller or run PX4 hardware-in-the-loop.</p>
+        <div class="grid2 keys">
+          <div>
+            <h4>Keyboard (Mode 2)</h4>
+            <table>
+              <tr><td><kbd>W</kbd><kbd>S</kbd></td><td>Throttle up / down (climb / descend)</td></tr>
+              <tr><td><kbd>A</kbd><kbd>D</kbd></td><td>Yaw left / right</td></tr>
+              <tr><td><kbd>↑</kbd><kbd>↓</kbd></td><td>Pitch forward / back</td></tr>
+              <tr><td><kbd>←</kbd><kbd>→</kbd></td><td>Roll left / right</td></tr>
+              <tr><td><kbd>Shift</kbd></td><td>Full stick deflection</td></tr>
+              <tr><td><kbd>Space</kbd></td><td>Arm / disarm (double-press in flight)</td></tr>
+            </table>
+          </div>
+          <div>
+            <h4>Commands</h4>
+            <table>
+              <tr><td><kbd>T</kbd></td><td>Takeoff</td><td><kbd>G</kbd></td><td>Land</td></tr>
+              <tr><td><kbd>H</kbd></td><td>Return home</td><td><kbd>M</kbd></td><td>Start mission</td></tr>
+              <tr><td><kbd>1</kbd>–<kbd>4</kbd></td><td>Stabilized / Altitude / Position / Acro</td><td><kbd>O</kbd></td><td>Hold</td></tr>
+              <tr><td><kbd>C</kbd></td><td>Camera view</td><td><kbd>Q</kbd></td><td>Ground control</td></tr>
+              <tr><td><kbd>P</kbd></td><td>Screenshot</td><td><kbd>U</kbd></td><td>Hide UI (photo mode)</td></tr>
+              <tr><td><kbd>Backspace</kbd></td><td>Reset simulation</td><td><kbd>F1</kbd></td><td>This help</td></tr>
+            </table>
+          </div>
+        </div>
+        <p class="hint">Remote controller: in simulation mode arm with the stick gesture <b>throttle down + yaw right</b> (hold 1 s); disarm with throttle down + yaw left. A USB transmitter in joystick mode or a gamepad works too.</p>
+        <div class="row end"><button class="primary" value="ok">Let's fly</button></div>
+      </form>
+    </dialog>
+
+    <div id="loading"><div class="spinner"></div><p>Building the world…</p></div>
+  </div>
+
+  <script src="vendor/leaflet/leaflet.js"></script>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
