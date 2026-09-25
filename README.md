@@ -1,6 +1,6 @@
-# Dronee: F450 drone simulator in your browser
+# ALbarajControl: F450 drone simulator in your browser
 
-**▶ Open the simulator: https://mhmdsalemm100.github.io/Dronee/**
+**▶ Open the simulator: https://mhmdsalemm100.github.io/ALbarajControl/**
 
 A Gazebo-style 3D simulator for a **DJI F450 quadcopter** that runs entirely in a web page. You can:
 
@@ -24,7 +24,7 @@ A Gazebo-style 3D simulator for a **DJI F450 quadcopter** that runs entirely in 
 
 ## Quick start
 
-1. Open **https://mhmdsalemm100.github.io/Dronee/** in Chrome or Edge.
+1. Open **https://mhmdsalemm100.github.io/ALbarajControl/** in Chrome or Edge.
 2. Press **T** to take off. Fly with **W/S** (throttle), **A/D** (yaw) and the **arrow keys** (pitch/roll). Press **H** to return home, **F1** for all keys.
 3. Click the purple **Q** icon (or press **Q**) to open the ground control station. In **Plan**, click the map to add waypoints, then press **Start mission**.
 
@@ -44,7 +44,7 @@ The workflow in `.github/workflows/pages.yml` runs the tests and publishes the s
 
 1. On GitHub, open **Settings → Pages**.
 2. Under **Build and deployment → Source**, choose **GitHub Actions**.
-3. Merge or push to `main`. After about a minute the simulator is live at `https://mhmdsalemm100.github.io/Dronee/`. The link also appears in the repository's *Deployments* / *Environments → github-pages* section.
+3. Merge or push to `main`. After about a minute the simulator is live at `https://mhmdsalemm100.github.io/ALbarajControl/`. The link also appears in the repository's *Deployments* / *Environments → github-pages* section.
 
 ## Running locally
 
